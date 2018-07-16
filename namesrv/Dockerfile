@@ -32,14 +32,13 @@ RUN mkdir -p \
 		/opt/logs \
 		/opt/store
 
-RUN curl https://dist.apache.org/repos/dist/release/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip -o rocketmq.zip \
-          && unzip rocketmq.zip \
-          && mv rocketmq-all*/* . \
-          && rmdir rocketmq-all*  \
-          && rm rocketmq.zip
-
+ADD /target/rocketmq-namesrv-4.2.0.jar app.jar
+RUN sh -c 'touch /app.jar'
+EXPOSE 9876
+ENV TZ=Asia/Shanghai
 
 RUN chmod +x bin/mqnamesrv
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 CMD cd ${ROCKETMQ_HOME}/bin && export JAVA_OPT=" -Duser.home=/opt" && sh mqnamesrv
 
